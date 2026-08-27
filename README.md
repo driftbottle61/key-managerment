@@ -56,7 +56,7 @@ curl -fsSL https://raw.githubusercontent.com/driftbottle61/key-managerment/main/
 ```
 http://<服务器IP>:8080
 ```
-使用脚本输出的账号密码登录。**首次登录后请修改管理员密码并删除 `INITIAL_PASSWORD.txt`。**
+使用脚本输出的账号密码登录。登录后点击右上角「**修改密码**」设置新密码（改密后 `INITIAL_PASSWORD.txt` 会自动删除）。
 
 ## 手动运行（不使用 systemd）
 

@@ -199,6 +199,12 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/password")
+@login_required
+def password_page():
+    return render_template("password.html")
+
+
 @app.route("/health")
 def health():
     return jsonify({"ok": True, "time": int(time.time())})
@@ -311,6 +317,30 @@ def api_keystore_delete():
     data = request.get_json(silent=True) or {}
     keystore.delete_record(data.get("id") or "")
     return jsonify({"ok": True})
+
+
+@app.route("/api/change-password", methods=["POST"])
+@login_required
+@csrf_protect
+def api_change_password():
+    data = request.get_json(silent=True) or {}
+    old_pw = data.get("old_password") or ""
+    new_pw = data.get("new_password") or ""
+    if not check_password(CONFIG.get("admin_password_hash"), old_pw):
+        return jsonify({"ok": False, "error": "当前密码不正确"}), 200
+    if len(new_pw) < 6:
+        return jsonify({"ok": False, "error": "新密码至少 6 位"}), 200
+    if new_pw == old_pw:
+        return jsonify({"ok": False, "error": "新密码不能与当前密码相同"}), 200
+    CONFIG["admin_password_hash"] = hash_password(new_pw)
+    save_config(CONFIG)
+    try:
+        ipf = os.path.join(BASE_DIR, "INITIAL_PASSWORD.txt")
+        if os.path.exists(ipf):
+            os.remove(ipf)
+    except OSError:
+        pass
+    return jsonify({"ok": True, "message": "密码修改成功"})
 
 
 # ---------------------------------------------------------------------------
