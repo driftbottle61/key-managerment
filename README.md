@@ -23,12 +23,14 @@
 
 ## 一键安装（systemd / Linux）
 
-在 Debian / Ubuntu / CentOS / RHEL 上以 **root** 执行（自动下载最新 Release 并安装、开机自启）：
+在 Debian / Ubuntu / CentOS / RHEL 上以 **root** 执行，自动下载最新 Release、安装依赖、创建 systemd 服务并开机自启：
 
+**远程一键安装（推荐）**
 ```bash
-sudo bash -c "$(curl -fsSL https://github.com/driftbottle61/key-managerment/releases/latest/download/key-managerment-latest.tar.gz)"
+curl -fsSL https://raw.githubusercontent.com/driftbottle61/key-managerment/main/install.sh -o /tmp/km-install.sh
+sudo SSHWEB_PORT=8080 bash /tmp/km-install.sh
 ```
-> 上面一行是直接下载并解压的示意；更稳妥的方式是手动下载 tar.gz 后解压再执行 `install.sh`。
+> 脚本检测到当前目录无源码时，会自动从 GitHub Release 下载安装包。
 
 **手动安装**
 
