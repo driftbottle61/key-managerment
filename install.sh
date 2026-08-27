@@ -101,6 +101,14 @@ info "安装 Python 依赖..."
 PORT="${SSHWEB_PORT:-8080}"
 ADMIN_USER="${SSHWEB_ADMIN_USER:-admin}"
 
+# 首次安装(尚无 admin 配置)时生成初始密码并直接显示; 已配置过则沿用现有密码
+GENPW=""
+if [ -f "$INSTALL_DIR/config.json" ] && grep -q '"admin_password_hash"' "$INSTALL_DIR/config.json"; then
+  GENPW=""
+else
+  GENPW="$(openssl rand -base64 12 | tr -d '/+=' | head -c 16)"
+fi
+
 # ---------------- systemd 服务 ----------------
 info "创建 systemd 服务 $SERVICE_NAME (开机自启)..."
 cat > "/etc/systemd/system/${SERVICE_NAME}.service" <<SVC
@@ -113,6 +121,7 @@ Type=simple
 WorkingDirectory=${INSTALL_DIR}
 Environment=SSHWEB_PORT=${PORT}
 Environment=SSHWEB_ADMIN_USER=${ADMIN_USER}
+${GENPW:+Environment=SSHWEB_ADMIN_PASSWORD=${GENPW}}
 ExecStart=${INSTALL_DIR}/.venv/bin/python ${INSTALL_DIR}/app.py
 Restart=always
 RestartSec=3
@@ -125,13 +134,6 @@ systemctl daemon-reload
 systemctl enable "${SERVICE_NAME}" >/dev/null 2>&1 || true
 systemctl restart "${SERVICE_NAME}"
 
-# 等待首次启动生成初始密码
-sleep 2
-PWFILE="$INSTALL_DIR/INITIAL_PASSWORD.txt"
-if [ -f "$PWFILE" ]; then
-  INIT_PW="$(grep -oE '[A-Za-z0-9_-]{8,}' "$PWFILE" | tail -n1 || true)"
-fi
-
 # ---------------- 完成 ----------------
 status="$(systemctl is-active "$SERVICE_NAME" 2>/dev/null || echo inactive)"
 IPADDR="$(hostname -I 2>/dev/null | awk '{print $1}')"
@@ -143,10 +145,10 @@ echo "================================================================"
 echo "  服务状态   : $status"
 echo "  访问地址   : http://${IPADDR}:${PORT}"
 echo "  管理员账号 : ${ADMIN_USER}"
-if [ -n "${INIT_PW:-}" ]; then
-  echo "  初始密码   : ${INIT_PW}  (文件: ${PWFILE}, 首次登录后请修改并删除)"
+if [ -n "$GENPW" ]; then
+  echo "  初始密码   : $GENPW   (请牢记, 登录后可在「修改密码」中更改)"
 else
-  echo "  初始密码   : 见 ${PWFILE}"
+  echo "  初始密码   : 已配置过, 沿用现有密码(如遗忘需在服务端重置)"
 fi
 echo "  配置文件   : ${INSTALL_DIR}/config.json"
 echo "  密钥库文件 : ${INSTALL_DIR}/keystore.json"
