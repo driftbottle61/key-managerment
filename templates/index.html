@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<input type="hidden" id="csrf" value="{{ csrf_token }}">
+
+<div class="intro">
+  <p>在「发起端」机器上生成 SSH 私钥，再把公钥部署到「接受端」机器，实现免密登录。</p>
+</div>
+
+<div class="cards">
+  <!-- 发起端: 生成私钥 -->
+  <section class="card">
+    <h2>SSH 发起端 · 生成私钥</h2>
+    <div class="field">
+      <label>历史私钥（选择后自动填充，可复用公钥重新部署）</label>
+      <select id="keystore-sel">
+        <option value="">＋ 新建密钥（手动填写）</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>主机 IP</label>
+      <input type="text" id="src-ip" placeholder="192.168.100.101">
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>SSH 用户名</label>
+        <input type="text" id="src-user" placeholder="root">
+      </div>
+      <div class="field">
+        <label>SSH 端口</label>
+        <input type="number" id="src-port" value="22">
+      </div>
+    </div>
+    <div class="field">
+      <label>SSH 密码</label>
+      <input type="password" id="src-pass" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>系统平台</label>
+      <select id="src-os">
+        <option value="linux">Linux</option>
+        <option value="windows">Windows</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>密钥类型</label>
+      <select id="src-type">
+        <option value="ed25519">Ed25519（推荐）</option>
+        <option value="rsa">RSA 3072</option>
+      </select>
+    </div>
+    <p id="src-os-hint" class="warn hidden">Windows 将通过 SSH 执行 PowerShell 在目标机上生成密钥。</p>
+    <button id="btn-gen" class="primary">生成私钥</button>
+    <div id="src-result" class="result hidden"></div>
+  </section>
+
+  <!-- 接受端: 部署公钥 -->
+  <section class="card">
+    <h2>SSH 接受端 · 部署公钥</h2>
+    <div class="field">
+      <label>主机 IP</label>
+      <input type="text" id="dst-ip" placeholder="192.168.100.102">
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>SSH 用户名</label>
+        <input type="text" id="dst-user" placeholder="root">
+      </div>
+      <div class="field">
+        <label>SSH 端口</label>
+        <input type="number" id="dst-port" value="22">
+      </div>
+    </div>
+    <div class="field">
+      <label>认证方式</label>
+      <select id="dst-auth">
+        <option value="password">密码</option>
+        <option value="key">私钥</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>SSH 密码</label>
+      <input type="password" id="dst-pass" autocomplete="off">
+    </div>
+    <div class="field hidden" id="row-dst-key">
+      <label>SSH 私钥（登录目标机用）</label>
+      <textarea id="dst-authkey" rows="4" placeholder="-----BEGIN OPENSSH PRIVATE KEY-----"></textarea>
+    </div>
+    <div class="field">
+      <label>系统平台</label>
+      <select id="dst-os">
+        <option value="linux">Linux</option>
+        <option value="routeros">RouterOS (MikroTik)</option>
+      </select>
+    </div>
+    <div class="field" id="row-router-user">
+      <label>RouterOS 绑定用户（可选）</label>
+      <input type="text" id="dst-router-user" placeholder="默认同登录用户名">
+    </div>
+    <div class="field">
+      <label>公钥（自动取自发起端，可手动修改）</label>
+      <textarea id="dst-pubkey" rows="3" readonly placeholder="先在发起端生成私钥，或手动粘贴公钥"></textarea>
+    </div>
+    <button id="btn-deploy" class="primary">部署公钥</button>
+    <div id="dst-result" class="result hidden"></div>
+  </section>
+</div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>SSH 密钥工具</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">🔑 SSH 密钥工具</span>
+    {% if session.get('logged_in') %}
+    <nav>
+      <a href="/">首页</a>
+      <a href="/logout">退出</a>
+    </nav>
+    {% endif %}
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer">仅供授权管理使用 · 内网/受控环境运行</footer>
+</body>
+</html>

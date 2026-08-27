@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+*.log
+sshweb.log
+config.json
+keystore.json
+INITIAL_PASSWORD.txt
+dist/
+*.tar.gz
