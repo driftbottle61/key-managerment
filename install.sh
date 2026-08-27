@@ -134,12 +134,14 @@ fi
 
 # ---------------- 完成 ----------------
 status="$(systemctl is-active "$SERVICE_NAME" 2>/dev/null || echo inactive)"
+IPADDR="$(hostname -I 2>/dev/null | awk '{print $1}')"
+[ -z "$IPADDR" ] && IPADDR="<本机IP>"
 echo
 echo "================================================================"
 echo "  安装完成"
 echo "================================================================"
 echo "  服务状态   : $status"
-echo "  访问地址   : http://<本机IP>:${PORT}"
+echo "  访问地址   : http://${IPADDR}:${PORT}"
 echo "  管理员账号 : ${ADMIN_USER}"
 if [ -n "${INIT_PW:-}" ]; then
   echo "  初始密码   : ${INIT_PW}  (文件: ${PWFILE}, 首次登录后请修改并删除)"
