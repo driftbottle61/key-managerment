@@ -39,7 +39,7 @@ curl -fsSL https://raw.githubusercontent.com/driftbottle61/key-managerment/main/
    ```bash
    wget https://github.com/driftbottle61/key-managerment/releases/latest/download/key-managerment-latest.tar.gz
    tar -xzf key-managerment-latest.tar.gz
-   cd key-managerment-v1.0.0
+   cd key-managerment-v*
    ```
 2. 执行一键安装（root）：
    ```bash
@@ -61,7 +61,7 @@ http://<服务器IP>:8080
 ## 手动运行（不使用 systemd）
 
 ```bash
-cd key-managerment-v1.0.0
+cd key-managerment-v*
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 SSHWEB_PORT=8080 SSHWEB_ADMIN_USER=admin SSHWEB_ADMIN_PASSWORD='你的密码' .venv/bin/python app.py
