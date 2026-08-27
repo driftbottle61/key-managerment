@@ -324,13 +324,10 @@ def api_keystore_delete():
 @csrf_protect
 def api_change_password():
     data = request.get_json(silent=True) or {}
-    old_pw = data.get("old_password") or ""
     new_pw = data.get("new_password") or ""
-    if not check_password(CONFIG.get("admin_password_hash"), old_pw):
-        return jsonify({"ok": False, "error": "当前密码不正确"}), 200
     if len(new_pw) < 6:
         return jsonify({"ok": False, "error": "新密码至少 6 位"}), 200
-    if new_pw == old_pw:
+    if check_password(CONFIG.get("admin_password_hash"), new_pw):
         return jsonify({"ok": False, "error": "新密码不能与当前密码相同"}), 200
     CONFIG["admin_password_hash"] = hash_password(new_pw)
     save_config(CONFIG)
