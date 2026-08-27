@@ -63,7 +63,7 @@ else
 fi
 
 # ---------------- 安装系统依赖 ----------------
-need(){ command -v "$1" >/dev/null 2>&1 || { info "安装 $1 ..."; "$PKGM" "$@"; }; }
+need(){ command -v "$1" >/dev/null 2>&1 || { info "安装 $1 ..."; $PKGM "$@"; }; }
 if command -v apt-get >/dev/null 2>&1; then
   PKGM="apt-get install -y"
   export DEBIAN_FRONTEND=noninteractive
