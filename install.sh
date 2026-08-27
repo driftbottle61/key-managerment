@@ -18,7 +18,12 @@ APP_NAME="key-managerment"
 INSTALL_DIR="/opt/${APP_NAME}"
 SERVICE_NAME="${APP_NAME}"
 GITHUB_REPO="driftbottle61/key-managerment"
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# 兼容 curl|bash / bash -c "$(curl ...)" 内联执行: 此时无脚本文件, 走远程下载
+if [[ -n "${BASH_SOURCE[0]:-}" ]] && [[ "${BASH_SOURCE[0]}" != "bash" ]]; then
+  HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+else
+  HERE=""
+fi
 VERSION="${1:-latest}"
 
 # ---------------- 颜色 ----------------
@@ -36,7 +41,7 @@ if ! command -v systemctl >/dev/null 2>&1; then
 fi
 
 # ---------------- 准备源码目录 ----------------
-if [ -f "$HERE/app.py" ]; then
+if [[ -n "$HERE" ]] && [ -f "$HERE/app.py" ]; then
   SRC_DIR="$HERE"
   info "使用本地源码目录: $SRC_DIR"
 else

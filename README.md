@@ -25,12 +25,13 @@
 
 在 Debian / Ubuntu / CentOS / RHEL 上以 **root** 执行，自动下载最新 Release、安装依赖、创建 systemd 服务并开机自启：
 
-**远程一键安装（推荐）**
+**远程一键安装（推荐，单行命令）**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/driftbottle61/key-managerment/main/install.sh -o /tmp/km-install.sh
-sudo SSHWEB_PORT=8080 bash /tmp/km-install.sh
+curl -fsSL https://raw.githubusercontent.com/driftbottle61/key-managerment/main/install.sh | sudo bash
 ```
-> 脚本检测到当前目录无源码时，会自动从 GitHub Release 下载安装包。
+> 脚本无需本地文件，自动从 GitHub Release 下载安装包并完成安装、开机自启。
+> 如需自定义端口：`curl -fsSL ... | sudo SSHWEB_PORT=8800 bash`
+> 或先下载再执行：`curl -fsSL ... -o /tmp/km-install.sh && sudo bash /tmp/km-install.sh`
 
 **手动安装**
 
